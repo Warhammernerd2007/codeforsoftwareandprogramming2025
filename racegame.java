@@ -29,12 +29,21 @@ public class RaceGame extends JPanel implements ActionListener, KeyListener {
         this.setPreferredSize(new Dimension(500, 600));
         this.setBackground(Color.gray);
         this.setFocusable(true);
+        this.requestFocusInWindow();
         this.addKeyListener(this);
+
+        // Load car image safely
+        try {
+            carImage = new ImageIcon(getClass().getResource("ferrari-296-gts-n-largo-by-novitec-2025-thumb.jpg")).getImage();
+        } catch (Exception e) {
+            System.out.println("woop");
+        }
+
         timer = new Timer(20, this);
         timer.start();
+
         spawnObstacle();
         loadHighScore();
-        carImage = new ImageIcon("ferrari-296-gts-n-largo-by-novitec-2025-thumb.jpg").getImage();
     }
 
     public void spawnObstacle() {
@@ -65,15 +74,14 @@ public class RaceGame extends JPanel implements ActionListener, KeyListener {
         }
     }
 
-    public void playSound(String soundFile) {
+    public void playSound(String soundFileName) {
         try {
-            File file = new File(soundFile);
-            AudioInputStream audio = AudioSystem.getAudioInputStream(file);
+            AudioInputStream audioIn = AudioSystem.getAudioInputStream(getClass().getResource(soundFileName));
             Clip clip = AudioSystem.getClip();
-            clip.open(audio);
+            clip.open(audioIn);
             clip.start();
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error playing sound: " + soundFileName);
         }
     }
 
@@ -81,22 +89,27 @@ public class RaceGame extends JPanel implements ActionListener, KeyListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Draw road lines
+        // Road lines
         g.setColor(Color.white);
         for (int i = 0; i < getHeight(); i += 40) {
             g.fillRect(245, i, 10, 20);
         }
 
-        // Draw car image
-        g.drawImage(carImage, carX, carY, carWidth, carHeight, this);
+        // Draw car
+        if (carImage != null) {
+            g.drawImage(carImage, carX, carY, carWidth, carHeight, this);
+        } else {
+            g.setColor(Color.red);
+            g.fillRect(carX, carY, carWidth, carHeight);
+        }
 
-        // Draw obstacles
+        // Obstacles
         g.setColor(Color.black);
         for (Rectangle obs : obstacles) {
             g.fillRect(obs.x, obs.y, obs.width, obs.height);
         }
 
-        // Draw score and high score
+        // Score
         g.setColor(Color.white);
         g.setFont(new Font("Arial", Font.BOLD, 20));
         g.drawString("Score: " + score, 20, 30);
@@ -123,12 +136,10 @@ public class RaceGame extends JPanel implements ActionListener, KeyListener {
                 obstacles.remove(i);
                 score++;
 
-                // Increase difficulty
                 if (score % 10 == 0 && obstacleSpeed < 15) {
                     obstacleSpeed++;
                 }
 
-                // Update high score
                 if (score > highScore) {
                     highScore = score;
                     saveHighScore();
@@ -141,7 +152,6 @@ public class RaceGame extends JPanel implements ActionListener, KeyListener {
         repaint();
     }
 
-    // Key handling
     @Override
     public void keyPressed(KeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_LEFT) leftPressed = true;
@@ -157,15 +167,16 @@ public class RaceGame extends JPanel implements ActionListener, KeyListener {
     @Override
     public void keyTyped(KeyEvent e) {}
 
-    // Main method
     public static void main(String[] args) {
-        JFrame frame = new JFrame("Race Game");
-        RaceGame game = new RaceGame();
-        frame.add(game);
-        frame.pack();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setResizable(false);
-        frame.setLocationRelativeTo(null);
-        frame.setVisible(true);
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new JFrame("Race Game");
+            RaceGame game = new RaceGame();
+            frame.add(game);
+            frame.pack();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setResizable(false);
+            frame.setLocationRelativeTo(null);
+            frame.setVisible(true);
+        });
     }
 }
