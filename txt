@@ -1,0 +1,36 @@
+
+User Requirements:
+The game should allow the player to control a car and avoid obstacles.
+The game must keep track of the score and high score.
+The game should play a sound when the car crashes.
+The car should move left or right with arrow keys.
+Difficulty should increase over time as the player progresses.
+System Specifications:
+Written in Java using Swing for GUI.
+Runs on both Windows and macOS (tested on macOS).
+Includes support for images and sound.
+Saves and loads high scores using file I/O.
+No internet or database connection required.
+
+UML Diagrams
+Use Case Diagram:
+Actors: Player
+Use Cases:
+Start Game
+Move Car
+Avoid Obstacles
+Track Score
+Save High Score
+End Game on Collision
+
+Data Files (used by the program)
+car.png – image used for the player's car.
+
+Tool Selection
+IDE: IntelliJ IDEA (tested on Eclipse as well)
+Version Control: Git (local repo)
+Build Tool: No build tool needed for current version; could scale to use Maven for modularity
+Graphics and Sound: Java Swing, javax.sound.sampled
+Testing OS: macOS (designed to work cross-platform)
+
+
